@@ -34,7 +34,7 @@ def overview_data(x_train_df, y_train_df):
 
 
 
-def main(data_dir='../data_reviews'):
+def main(data_dir='data_reviews'):
 
     # overview the training data
     x_train_df = pd.read_csv(os.path.join(data_dir, 'x_train.csv'))
