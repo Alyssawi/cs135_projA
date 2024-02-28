@@ -5,7 +5,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 import sklearn.linear_model
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer, roc_auc_score
+import pickle
 
+def extract_BoW_features(data_list):
+    vectorizer = CountVectorizer(strip_accents='ascii', lowercase=True, stop_words='english')
+    reviews_list = [val[1] for val in data_list]
+    features_count = vectorizer.fit_transform(reviews_list)
+    return features_count
 
 def main(data_dir='data_reviews'):
 
@@ -19,18 +25,19 @@ def main(data_dir='data_reviews'):
     reviews_list = [val[1] for val in tr_text_list]
     tr_y = np.hstack(np.array(tr_y_list))
     # TODO: add max_df, min_df
-    vectorizer = CountVectorizer(strip_accents='ascii', lowercase=True, stop_words='english', max_df=0.95, min_df=2)
+    vectorizer = CountVectorizer(strip_accents='ascii', lowercase=True, stop_words='english')
     features_count = vectorizer.fit_transform(reviews_list)
+    
     # features = vectorizer.get_feature_names_out()
     # print(features)
     # print(features_count.toarray())
 
 
     param_grid = {
-        'C' :  np.logspace(-9, 6, 31)
+        'C' : np.logspace(-9, 6, 31)
     }
     
-    lr = sklearn.linear_model.LogisticRegression(solver='lbfgs')
+    lr = sklearn.linear_model.LogisticRegression(solver='liblinear')
     # Setup GridSearchCV with AUROC scoring
     auroc_scorer = make_scorer(roc_auc_score, needs_proba=True, greater_is_better=True)
     grid_search = GridSearchCV(lr, param_grid, scoring=auroc_scorer, cv=5, verbose=1)
@@ -46,7 +53,8 @@ def main(data_dir='data_reviews'):
     # Optional: Use the best model for further predictions or analysis
     best_model = grid_search.best_estimator_
     # Example: best_model.predict(new_data)
-
+    with open('classifier1.pkl','wb') as f:
+        pickle.dump(best_model,f)
 
 
 

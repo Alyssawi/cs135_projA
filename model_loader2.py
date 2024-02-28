@@ -27,6 +27,6 @@ with open('stub/classifier2.pkl', 'rb') as f:
     classifier2 = pickle.load(f)
 
 # TODO: please provide your team name -- 20 chars maximum and no spaces please.  
-teamname = "awesome-team"
+teamname = "byte-sized"
 
 
