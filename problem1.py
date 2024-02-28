@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from sklearn.feature_extraction.text import CountVectorizer
 import sklearn.linear_model
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import make_scorer, roc_auc_score
 
 
 def main(data_dir='data_reviews'):
@@ -15,31 +17,35 @@ def main(data_dir='data_reviews'):
     tr_y_list = y_train_df.values.tolist()
 
     reviews_list = [val[1] for val in tr_text_list]
-
+    tr_y = np.hstack(np.array(tr_y_list))
     # TODO: add max_df, min_df
-    vectorizer = CountVectorizer(strip_accents='ascii', lowercase=True, stop_words='english')
+    vectorizer = CountVectorizer(strip_accents='ascii', lowercase=True, stop_words='english', max_df=0.95, min_df=2)
     features_count = vectorizer.fit_transform(reviews_list)
-    features = vectorizer.get_feature_names_out()
+    # features = vectorizer.get_feature_names_out()
     # print(features)
-    # print(feature_count.toarray())
+    # print(features_count.toarray())
 
-    C_grid = np.logspace(-9, 6, 31)
 
-    for C in C_grid:
-
-        # create the logictic regressor
-
-        # calc cross validation error
-
-        # store cross validation error
-
+    param_grid = {
+        'C' :  np.logspace(-9, 6, 31)
+    }
     
+    lr = sklearn.linear_model.LogisticRegression(solver='lbfgs')
+    # Setup GridSearchCV with AUROC scoring
+    auroc_scorer = make_scorer(roc_auc_score, needs_proba=True, greater_is_better=True)
+    grid_search = GridSearchCV(lr, param_grid, scoring=auroc_scorer, cv=5, verbose=1)
 
-    # pick mean CV error
-    
 
+    # Fit GridSearchCV
+    grid_search.fit(features_count, tr_y)
 
-    
+    # Print the best parameters and AUROC score
+    print("Best parameters:", grid_search.best_params_)
+    print("Best AUROC score:", grid_search.best_score_)
+
+    # Optional: Use the best model for further predictions or analysis
+    best_model = grid_search.best_estimator_
+    # Example: best_model.predict(new_data)
 
 
 
