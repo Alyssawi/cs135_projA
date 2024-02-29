@@ -48,7 +48,7 @@ def main(data_dir='data_reviews'):
     lr = sklearn.linear_model.LogisticRegression(solver='liblinear')
     # Setup GridSearchCV with AUROC scoring
     auroc_scorer = make_scorer(roc_auc_score, needs_proba=True, greater_is_better=True)
-    grid_search = GridSearchCV(lr, param_grid, scoring=auroc_scorer, cv=5)
+    grid_search = GridSearchCV(lr, param_grid, scoring=auroc_scorer, cv=10)
     # grid_search = GridSearchCV(lr, param_grid, scoring=auroc_scorer, cv=5, verbose=1)
 
 
