@@ -39,7 +39,19 @@ class p2_model:
 
         ## create model 
         self.model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
- 
+
+        config = self.model.config
+
+        config["hidden_size"] = 64/128/32/...
+        config["num_heads"] = 64/128/32/...
+        config["hidden_size"] = 64/128/32/...
+        
+        self.model = BertForSequenceClassification(config)
+
+        # use gridsearch to search hyperparams 
+
+
+
         ## TO DO: Right now validation doesn't do anything, need to figure out cross validation and what that means
         # dataset = TensorDataset(tokens['input_ids'], tokens['attention_mask'], torch.tensor(tr_y))
         # train_size = int(0.8 * len(dataset))
