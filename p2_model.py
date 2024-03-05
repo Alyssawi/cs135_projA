@@ -17,7 +17,11 @@ from transformers import BertForSequenceClassification
 class p2_model:
     model: BertForSequenceClassification
 
-    def __init__(self):
+    def __init__(self, model=None):
+        if model:
+            print("here")
+            self.model = model
+            return
         ## read in data 
         x_train_df = pd.read_csv(os.path.join('data_reviews', 'x_train.csv'))
         y_train_df = pd.read_csv(os.path.join('data_reviews', 'y_train.csv'))
@@ -63,7 +67,12 @@ class p2_model:
                 loss.backward()
                 optimizer.step()
 
-    def predict_proba(self, tokens):
+    def predict_proba(self, data_list):
+        reviews_list = [val[1].lower() for val in data_list]
+        with open('tokenizer.pkl','rb') as f:
+            tokenizer = pickle.load(f)
+        tokens = tokenizer(reviews_list, padding=True, truncation=True, return_tensors="pt")
+
         dataset = TensorDataset(tokens['input_ids'], tokens['attention_mask'])
         dataloader = DataLoader(dataset, batch_size=2, shuffle=False)
 
@@ -76,4 +85,5 @@ class p2_model:
                 outputs = self.model(input_ids, attention_mask=attention_mask)
                 logits = outputs.logits 
                 probabilities.extend(torch.nn.functional.softmax(logits, dim=1).cpu().numpy().tolist())
-        return probabilities
+        
+        return np.array(probabilities)

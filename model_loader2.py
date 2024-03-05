@@ -17,14 +17,33 @@ import pickle
 
 # TODO: please replace the line below with your implementations. The line below is just an 
 # example. 
-from stub.feature_extraction import dumb_feature_extractor2
-extract_awesome_features = dumb_feature_extractor2
+from problem2_extract import extract_awesome_features
+
+from p2_model import p2_model
+from transformers import BertForSequenceClassification
+
 
 # TODO: please load your own trained models. Please check train_and_save_classifier.py to find 
 # an example of training and saving a classiifer. 
 
-with open('stub/classifier2.pkl', 'rb') as f:
-    classifier2 = pickle.load(f)
+# with open('classifier2.pkl', 'rb') as f:
+#     classifier2 = pickle.load(f)
+
+reconstructed_state_dict = {}
+
+for i in range(15):
+    # Load the chunk
+    with open(f'model_part_{i}.pkl', 'rb') as f:
+        chunk_dict = pickle.load(f)
+    
+    # Update the reconstructed state dictionary with the chunk
+    reconstructed_state_dict.update(chunk_dict)
+
+# Now, load the reconstructed state dict back into the model
+model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
+model.load_state_dict(reconstructed_state_dict)
+classifier2 = p2_model(model)
+
 
 # TODO: please provide your team name -- 20 chars maximum and no spaces please.  
 teamname = "byte-sized"

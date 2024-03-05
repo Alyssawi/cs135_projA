@@ -18,10 +18,40 @@ from transformers import BertForSequenceClassification
 
 from p2_model import p2_model 
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-with open('tokenizer.pkl','wb') as f:
-    pickle.dump(tokenizer,f)
+# tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+# with open('tokenizer.pkl','wb') as f:
+#     pickle.dump(tokenizer,f)
 
-model = p2_model()
-with open('classifier2.pkl','wb') as f:
-    pickle.dump(model,f)
+with open('classifier2.pkl', 'rb') as fin:
+    model = pickle.load(fin).model
+    # classifier2 = pickle.load(f)
+# model = p2_model()
+    
+# with open('classifier2.pkl','wb') as f:
+    # pickle.dump(model,f)
+
+    model_state_dict = model.state_dict()
+
+    # Convert the state dict to a list of tuples for easier chunking
+    items = list(model_state_dict.items())
+
+    # Define the number of parts you want to split your model into
+    num_parts = 15 
+
+    # Calculate the size of each chunk
+    chunk_size = len(items) // num_parts
+
+    for i in range(num_parts):
+        # Determine the start and end of the current chunk
+        start = i * chunk_size
+        end = (i + 1) * chunk_size if i < num_parts - 1 else len(items)
+        
+        # Extract the chunk from the items list
+        chunk = items[start:end]
+        
+        # Convert the chunk back to a dict
+        chunk_dict = dict(chunk)
+        
+        # Save the chunk using pickle
+        with open(f'model_part_{i}.pkl', 'wb') as f:
+            pickle.dump(chunk_dict, f)

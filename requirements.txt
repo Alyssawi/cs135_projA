@@ -1,0 +1,4 @@
+# This is a comment indicating start of requirements.txt
+transformers
+torch
+# This is a comment indicating end of requirements.txt
