@@ -22,7 +22,9 @@ from p2_model import p2_model
 # with open('tokenizer.pkl','wb') as f:
 #     pickle.dump(tokenizer,f)
 
-with open('classifier2.pkl', 'rb') as fin:
+classifier = 'bert2.pkl'
+
+with open(classifier, 'rb') as fin:
     model = pickle.load(fin).model
     # classifier2 = pickle.load(f)
 # model = p2_model()
@@ -36,7 +38,7 @@ with open('classifier2.pkl', 'rb') as fin:
     items = list(model_state_dict.items())
 
     # Define the number of parts you want to split your model into
-    num_parts = 15 
+    num_parts = 8
 
     # Calculate the size of each chunk
     chunk_size = len(items) // num_parts
@@ -53,5 +55,5 @@ with open('classifier2.pkl', 'rb') as fin:
         chunk_dict = dict(chunk)
         
         # Save the chunk using pickle
-        with open(f'model_part_{i}.pkl', 'wb') as f:
+        with open(f'{classifier}_part_{i}.pkl', 'wb') as f:
             pickle.dump(chunk_dict, f)

@@ -55,7 +55,9 @@ class p2_estimator(BaseEstimator):
                 loss.backward()
                 optimizer.step()
 
-    def predict_proba(self, reviews):
+    def predict_proba(self, data_list):
+        reviews = [val[1].lower() for val in data_list]
+
         tokens = self.tokenizer(reviews, padding=True, truncation=True, return_tensors="pt")
 
         dataset = TensorDataset(tokens['input_ids'], tokens['attention_mask'])

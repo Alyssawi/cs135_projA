@@ -19,30 +19,37 @@ import pickle
 # example. 
 from problem2_extract import extract_awesome_features
 
-from p2_model import p2_model
-from transformers import BertForSequenceClassification
-
 
 # TODO: please load your own trained models. Please check train_and_save_classifier.py to find 
 # an example of training and saving a classiifer. 
 
-# with open('classifier2.pkl', 'rb') as f:
+# with open('bert2.pkl', 'rb') as f:
 #     classifier2 = pickle.load(f)
+
+classifier = 'bert2.pkl'
 
 reconstructed_state_dict = {}
 
-for i in range(15):
+for i in range(8):
     # Load the chunk
-    with open(f'model_part_{i}.pkl', 'rb') as f:
+    with open(f'{classifier}_part_{i}.pkl', 'rb') as f:
         chunk_dict = pickle.load(f)
     
     # Update the reconstructed state dictionary with the chunk
     reconstructed_state_dict.update(chunk_dict)
 
+
+
+# from transformers import BertForSequenceClassification
+from transformers import DistilBertForSequenceClassification
+
 # Now, load the reconstructed state dict back into the model
-model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
+model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=2)
 model.load_state_dict(reconstructed_state_dict)
-classifier2 = p2_model(model)
+
+
+from p2_distilled_estimator import p2_estimator
+classifier2 = p2_estimator(model=model)
 
 
 # TODO: please provide your team name -- 20 chars maximum and no spaces please.  
